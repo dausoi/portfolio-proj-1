@@ -7,7 +7,3 @@
 from pathlib import Path
 from datetime import datetime
 import requests
-
-
-def download_file(url, filename=None):
-    r = requests.get(url)
