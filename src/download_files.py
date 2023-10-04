@@ -15,14 +15,15 @@ import os
 import typing
 from google.cloud import storage
 
-def _get_filename(url: str) -> str:
-    """ Construct a new filename from url path, with timestamp at the end """
+def _get_filename(url: str, timestamp: bool=False) -> str:
+    """ Construct a new filename from url path, with timestamp at the end as option """
+    timestamp = f"_{datetime.strftime(datetime.now(), '%Y-%m-%d_%H%M%S')}" if timestamp else ''
     parsed = parse.urlparse(url)
     sitename = parsed.netloc
     sitename = sitename.replace(".", "")
     p, e = os.path.splitext(parsed.path)
     p = p.replace("/", "")
-    filename = sitename + p + f"_{datetime.strftime(datetime.now(), '%Y-%m-%d_%H%M%S')}" + e
+    filename = sitename + p + '' + e
     return filename
 
 def save_local(url: str, save_dir: Path) -> Path:
@@ -45,7 +46,7 @@ def upload_to_gcs(gcs_path: typing.Union[str, Path], local_path: Path, bucket_na
     blob.upload_from_filename(local_path)
 
 if __name__ == "__main__":
-    download_url = f"https://bookscape.co/sitemap.xml"
+    download_url = f"https://bookscape.co/books/in-stock/science-of-everything/seven-half-lessons-brain"
     save_dir = Path("bookscape")
     filename = save_local(download_url, save_dir)
     # upload_to_gcs(gcs_path=filename, local_path=filename, bucket_name="de-zoomcamp-dtl-test")
